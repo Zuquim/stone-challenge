@@ -96,9 +96,30 @@ class Database:
         else:
             log.info("Connection was already closed")
 
-    def select_rows(self, query) -> List[DictRow]:
+    def select_rows(
+        self,
+        table: str,
+        fields: Union[str, List[str], Tuple[str]],
+        filter: Union[str, sql.Composed] = "",
+    ) -> List[DictRow]:
         """Run a SQL query to select rows from table."""
-        raise NotImplementedError
+        query = sql.SQL("SELECT {fields} FROM {table} {filter}").format(
+            fields=sql.Identifier(fields)
+            if type(fields) is str
+            else sql.SQL(", ").join(map(sql.Identifier, fields)),
+            table=sql.Identifier(table),
+            filter=filter if type(filter) is sql.Composed else sql.SQL(filter),
+        )
+        try:
+            self.connect()
+            with self.conn.cursor() as cursor:
+                cursor.execute(query)
+                log.info(f"{cursor.rowcount} rows selected")
+        except (Exception, DatabaseError) as e:
+            log.error(e)
+            return []
+        else:
+            return cursor.fetchall()
 
     def insert_into(
         self,
@@ -157,11 +178,27 @@ class Database:
 class BaseModel:
     """Base DB model."""
 
-    def __init__(self, table_name: str, created: datetime = datetime.now(), modified: Optional[datetime] = None):
+    def __init__(self, table_name: str):
         self.id = -1  # DB PK
         self.table_name = table_name
-        self.created = created
-        self.modified = modified
+        self.created = None
+        self.modified = None
+
+    def exists_in_db(self, db_obj: Database) -> bool:
+        """Checks if this object already exists inside DB."""
+        raise NotImplementedError
+
+    def insert_into_db(self, db_obj: Database) -> bool:
+        """Inserts object data into DB."""
+        raise NotImplementedError
+
+    def update_data_in_db(self, db_obj: Database) -> bool:
+        """Updates related row in DB according to this object's data."""
+        raise NotImplementedError
+
+    def soft_delete_data_in_db(self, db_obj: Database) -> bool:
+        """Soft deletes related row in DB (set to inactive/disabled)."""
+        raise NotImplementedError
 
     def export_dict(self) -> dict:
         """Exports DB model as dictionary."""

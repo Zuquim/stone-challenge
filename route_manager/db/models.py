@@ -1,4 +1,4 @@
-from route_manager.db import BaseModel
+from route_manager.db import BaseModel, Database, _connection, log, sql
 
 
 class Client(BaseModel):
@@ -23,7 +23,28 @@ class SalesPerson(BaseModel):
     def __init__(self, name: str, email: str):
         super().__init__(table_name="salesperson")
         self.name = name
-        self.email = email
+        self.email = email  # PK
+
+    def exists_in_db(self, db_obj: Database) -> bool:
+        if self.id >= 0:
+            filter = sql.SQL("WHERE {id} = {value}").format(
+                id=sql.Identifier("id"), value=sql.Literal(self.id),
+            )
+        else:
+            filter = sql.SQL("WHERE {email} = '{value}'").format(
+                email=sql.Identifier("email"), value=sql.Literal(self.email),
+            )
+        sel = db_obj.select_rows(table=self.table_name, fields="*", filter=filter)
+        return len(sel) >= 1
+
+    def insert_into_db(self, db_obj: Database):
+        raise NotImplementedError
+
+    def update_data_in_db(self, db_obj: Database):
+        raise NotImplementedError
+
+    def soft_delete_data_in_db(self, db_obj: Database):
+        raise NotImplementedError
 
     def __repr__(self) -> str:
         return (

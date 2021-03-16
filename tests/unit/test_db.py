@@ -28,12 +28,16 @@ def test_db_init(database_obj):
     assert db.conn is None
 
 
-def test_base_model():
+def test_base_model(database_obj):
     bm = BaseModel("base_table")
     assert bm.id == -1
     assert bm.table_name == "base_table"
-    assert bm.created <= datetime.now()
+    assert bm.created is None
     assert bm.modified is None
     with raises(expected_exception=NotImplementedError):
+        bm.exists_in_db(database_obj)
+        bm.insert_into_db(database_obj)
+        bm.update_data_in_db(database_obj)
+        bm.soft_delete_data_in_db(database_obj)
         bm.export_dict()
         bm.import_dict({})
