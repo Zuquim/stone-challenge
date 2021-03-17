@@ -36,10 +36,14 @@ def test_route_init(database_obj):
 
 
 def test_salesperson_init(database_obj):
-    sp = SalesPerson(name="Dwight Kurt Schrute", email="schrute@dundermifflin.com")
-    assert sp.table_name == "salesperson"
-    assert sp.name == "Dwight Kurt Schrute"
-    assert sp.email == "schrute@dundermifflin.com"
+    table = "salesperson"
+    name = "Dwight Kurt Schrute"
+    email = "schrute@dundermifflin.com"
+
+    sp = SalesPerson(name=name, email=email)
+    assert sp.table_name == table
+    assert sp.name == name
+    assert sp.email == email
     assert sp.created is None
     assert sp.modified is None
     assert sp.exists_in_db(database_obj) is False
