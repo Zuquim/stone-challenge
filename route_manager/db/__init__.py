@@ -108,7 +108,7 @@ class Database:
             if type(fields) is str
             else sql.SQL(", ").join(map(sql.Identifier, fields)),
             table=sql.Identifier(table),
-            filter=filter if type(filter) is sql.Composed else sql.SQL(filter),
+            filter=sql.SQL(filter) if type(filter) is str else filter,
         )
         try:
             self.connect()
