@@ -34,8 +34,11 @@ class SalesPerson(BaseModel):
             filter = sql.SQL("WHERE {email} = {value}").format(
                 email=sql.Identifier("email"), value=sql.Literal(self.email),
             )
-        sel = db_obj.select_rows(table=self.table_name, fields="*", filter=filter)
-        return len(sel) >= 1
+        select = db_obj.select_rows(
+            table=self.table_name, fields=["name", "email", "created"], filter=filter
+        )
+        log.debug(f"SalesPerson.exists_in_db(): select={select}")
+        return len(select) >= 1
 
     def insert_into_db(self, db_obj: Database):
         raise NotImplementedError
