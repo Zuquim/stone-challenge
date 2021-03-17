@@ -46,6 +46,7 @@ def test_salesperson_init(database_obj):
     assert sp.email == email
     assert sp.created is None
     assert sp.modified is None
+    assert sp.active is True
     assert sp.exists_in_db(database_obj) is False
     with raises(expected_exception=NotImplementedError):
         sp.insert_into_db(database_obj)

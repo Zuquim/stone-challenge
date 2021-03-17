@@ -34,6 +34,7 @@ def test_base_model(database_obj):
     assert bm.table_name == "base_table"
     assert bm.created is None
     assert bm.modified is None
+    assert bm.active is True
     with raises(expected_exception=NotImplementedError):
         bm.exists_in_db(database_obj)
         bm.insert_into_db(database_obj)

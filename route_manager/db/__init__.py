@@ -184,6 +184,7 @@ class BaseModel:
         self.table_name = table_name
         self.created = None
         self.modified = None
+        self.active = True
 
     def exists_in_db(self, db_obj: Database) -> bool:
         """Checks if this object already exists inside DB."""

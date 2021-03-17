@@ -57,5 +57,6 @@ class SalesPerson(BaseModel):
             f"email='{self.email}'; "
             f"created={self.created}; "
             f"modified={self.modified}"
+            f"ative={self.active}"
             f")>"
         )
