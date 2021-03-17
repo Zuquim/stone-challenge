@@ -93,8 +93,15 @@ class Database:
             else:
                 self.__connection = None
                 log.info("Connection closed successfully")
-        else:
-            log.info("Connection was already closed")
+
+    def create_tables(self):
+        """Create needed DB tables."""
+        self.connect()
+        with self.conn.cursor() as cursor:
+            with open("route_manager/sql/create_tables.sql") as q:
+                cursor.execute(q.read())
+            self.conn.commit()
+            log.debug(f"Database.create_tables(): cursor.statusmessage='{cursor.statusmessage}'")
 
     def select_rows(
         self,
