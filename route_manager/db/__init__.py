@@ -99,7 +99,7 @@ class Database:
     def select_rows(
         self,
         table: str,
-        fields: Union[str, List[str], Tuple[str]],
+        fields: Union[str, list, tuple],
         filter: Union[str, sql.Composed] = "",
     ) -> List[DictRow]:
         """Run a SQL query to select rows from table."""
@@ -124,8 +124,8 @@ class Database:
     def insert_into(
         self,
         table: str,
-        fields: Union[List[str], Tuple[str]],
-        values: Union[List[Any], Tuple[Any]],
+        fields: Union[list, tuple],
+        values: Union[list, tuple],
     ) -> bool:
         """Run a SQL query to insert data into a table."""
         if len(fields) != len(values):
