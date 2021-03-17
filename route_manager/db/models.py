@@ -49,6 +49,19 @@ class SalesPerson(BaseModel):
     def soft_delete_data_in_db(self, db_obj: Database):
         raise NotImplementedError
 
+    def export_dict(self) -> dict:
+        return dict(
+            table_name=self.table_name,
+            row_data=dict(
+                id=self.id,
+                name=self.name,
+                email=self.email,
+                created=self.created,
+                modified=self.modified,
+                active=self.active,
+            )
+        )
+
     def __repr__(self) -> str:
         return (
             f"<SalesPerson("

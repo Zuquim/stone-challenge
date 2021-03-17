@@ -48,9 +48,15 @@ def test_salesperson_init(database_obj):
     assert sp.modified is None
     assert sp.active is True
     assert sp.exists_in_db(database_obj) is False
+
+    exported_data = sp.export_dict()
+    assert type(exported_data) is dict
+    assert type(exported_data["table_name"]) is str
+    assert exported_data["table_name"] == table
+    assert type(exported_data["row_data"]) is dict
+    assert exported_data["row_data"]["name"] == name
+    assert exported_data["row_data"]["email"] == email
+    assert exported_data["row_data"]["created"] is None
+
     with raises(expected_exception=NotImplementedError):
-        sp.insert_into_db(database_obj)
-        sp.update_data_in_db(database_obj)
-        sp.soft_delete_data_in_db(database_obj)
-        sp.export_dict()
         sp.import_dict({})
