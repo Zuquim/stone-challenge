@@ -115,6 +115,7 @@ class Database:
             with self.conn.cursor() as cursor:
                 cursor.execute(query)
                 log.info(f"{cursor.rowcount} rows selected")
+                results = cursor.fetchall()
         except (Exception, DatabaseError) as e:
             log.error(e)
             return []
