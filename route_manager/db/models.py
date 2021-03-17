@@ -31,7 +31,7 @@ class SalesPerson(BaseModel):
                 id=sql.Identifier("id"), value=sql.Literal(self.id),
             )
         else:
-            filter = sql.SQL("WHERE {email} = '{value}'").format(
+            filter = sql.SQL("WHERE {email} = {value}").format(
                 email=sql.Identifier("email"), value=sql.Literal(self.email),
             )
         sel = db_obj.select_rows(table=self.table_name, fields="*", filter=filter)
