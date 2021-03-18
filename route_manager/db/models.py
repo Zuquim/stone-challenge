@@ -23,7 +23,7 @@ class SalesPerson(BaseModel):
     def __init__(self, name: str, email: str):
         super().__init__(table_name="salesperson")
         self.name = name
-        self.email = email  # PK
+        self.email = email  # UNIQUE
 
     def exists_in_db(self, db_obj: Database) -> bool:
         if self.id >= 0:
@@ -35,10 +35,13 @@ class SalesPerson(BaseModel):
                 email=sql.Identifier("email"), value=sql.Literal(self.email),
             )
         select = db_obj.select_rows(
-            table=self.table_name, fields=["name", "email", "created"], filter=filter
+            table=self.table_name, fields=["id", "name", "email", "created", "modified", "active"], filter=filter
         )
         log.debug(f"SalesPerson.exists_in_db(): select={select}")
-        return len(select) >= 1
+        if len(select) == 1:
+            self.set_id(int(select[0]["id"]))
+            return True
+        return False
 
     def insert_into_db(self, db_obj: Database) -> bool:
         self.created = datetime.now()

@@ -77,6 +77,7 @@ def test_salesperson_crud(database_obj):
 
     sp = SalesPerson(name=name, email=email)
     assert sp.table_name == table
+    assert sp.id == -1
     assert sp.name == name
     assert sp.email == email
     assert sp.created is None
@@ -85,6 +86,7 @@ def test_salesperson_crud(database_obj):
     sp.insert_into_db(database_obj)
     assert sp.created <= datetime.now()
     assert sp.exists_in_db(database_obj) is True
+    assert sp.id >= 0
 
     with raises(expected_exception=NotImplementedError):
         sp.update_data_in_db(database_obj)

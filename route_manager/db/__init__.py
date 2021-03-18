@@ -188,11 +188,20 @@ class BaseModel:
     """Base DB model."""
 
     def __init__(self, table_name: str):
-        self.id = -1  # DB PK
+        self.__id = -1  # PK
         self.table_name = table_name
         self.created = None
         self.modified = None
         self.active = True
+
+    @property
+    def id(self) -> int:
+        return self.__id
+
+    def set_id(self, id: int):
+        if type(id) is not int or id <= -1:
+            raise ValueError("Model ID must be an integer >= 0!")
+        self.__id = id
 
     def exists_in_db(self, db_obj: Database) -> bool:
         """Checks if this object already exists inside DB."""
