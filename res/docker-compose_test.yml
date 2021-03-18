@@ -13,7 +13,7 @@ services:
       - 55000:5432
     restart: unless-stopped
     volumes:
-      - postgis-data:/var/lib/postgresql/data
+      - postgis-test-data:/var/lib/postgresql/data
       - ./logs:/var/log/postgresql
 
   route-manager:
@@ -26,7 +26,7 @@ services:
     env_file:
       - .env
     links:
-      - test-db:db
+      - db
     ports:
       - 8000:80
     restart: "no"
