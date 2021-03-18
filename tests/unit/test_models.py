@@ -60,3 +60,33 @@ def test_salesperson_init(database_obj):
 
     with raises(expected_exception=NotImplementedError):
         sp.import_dict({})
+
+
+def test_client_crud(database_obj):
+    pass
+
+
+def test_route_crud(database_obj):
+    pass
+
+
+def test_salesperson_crud(database_obj):
+    table = "salesperson"
+    name = "Dwight Kurt Schrute"
+    email = "schrute@dundermifflin.com"
+
+    sp = SalesPerson(name=name, email=email)
+    assert sp.table_name == table
+    assert sp.name == name
+    assert sp.email == email
+    assert sp.created is None
+    assert sp.exists_in_db(database_obj) is False
+
+    # assert sp.insert_into_db(database_obj) is True
+    sp.insert_into_db(database_obj)
+    assert sp.created <= datetime.now()
+    assert sp.exists_in_db(database_obj) is True
+
+    with raises(expected_exception=NotImplementedError):
+        sp.update_data_in_db(database_obj)
+        sp.soft_delete_data_in_db(database_obj)

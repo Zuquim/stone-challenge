@@ -127,7 +127,28 @@ class Database:
             log.error(e)
             return []
         else:
-            return cursor.fetchall()
+            return results
+        finally:
+            self.disconnect()
+
+    def run_query_n_commit(
+        self,
+        query_tuple: Tuple[sql.Composed, Union[dict, tuple]],
+    ) -> bool:
+        """Run query (write into DB) and commit."""
+        try:
+            self.connect()
+            with self.conn.cursor() as cursor:
+                cursor.execute(*query_tuple)
+                log.info(f"{cursor.rowcount} rows affected")
+            self.conn.commit()
+        except (Exception, DatabaseError) as e:
+            log.error(f"Exception: {e}")
+            return False
+        else:
+            return True
+        finally:
+            self.disconnect()
 
     def insert_into(
         self,
@@ -145,17 +166,7 @@ class Database:
             fields=sql.SQL(", ").join(map(sql.Identifier, fields)),
             values=sql.SQL(", ").join(sql.Placeholder() * len(values)),
         )
-        try:
-            self.connect()
-            with self.conn.cursor() as cursor:
-                cursor.execute(query, values)
-                self.conn.commit()
-                log.info(f"{cursor.rowcount} rows affected")
-        except (Exception, DatabaseError) as e:
-            log.error(e)
-            return False
-        else:
-            return True
+        return self.run_query_n_commit((query, values))
 
     def insert_into_by_dict(self, table: str, field_value_dict: dict) -> bool:
         """Run a SQL query to insert data into a table."""
@@ -166,17 +177,7 @@ class Database:
             ),
             values=sql.SQL(", ").join(map(sql.Placeholder, field_value_dict)),
         )
-        try:
-            self.connect()
-            with self.conn.cursor() as cursor:
-                cursor.execute(query, field_value_dict)
-                self.conn.commit()
-                log.info(f"{cursor.rowcount} rows affected")
-        except (Exception, DatabaseError) as e:
-            log.error(e)
-            return False
-        else:
-            return True
+        return self.run_query_n_commit((query, field_value_dict))
 
     def update_rows(self, query) -> str:
         """Run a SQL query to update rows in table."""

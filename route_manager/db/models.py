@@ -40,8 +40,13 @@ class SalesPerson(BaseModel):
         log.debug(f"SalesPerson.exists_in_db(): select={select}")
         return len(select) >= 1
 
-    def insert_into_db(self, db_obj: Database):
-        raise NotImplementedError
+    def insert_into_db(self, db_obj: Database) -> bool:
+        self.created = datetime.now()
+        return db_obj.insert_into(
+            table=self.table_name,
+            fields=("name", "email", "created"),
+            values=(self.name, self.email, self.created),
+        )
 
     def update_data_in_db(self, db_obj: Database):
         raise NotImplementedError
