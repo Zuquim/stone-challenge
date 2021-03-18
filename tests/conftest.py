@@ -1,5 +1,5 @@
 import pytest
-from psycopg2.extras import DictCursor
+# from pytest_postgresql.janitor import DatabaseJanitor
 
 from route_manager.db import Database, _connection
 
@@ -9,7 +9,6 @@ _default_conn_params = dict(
     user="manager",
     password="R0ute-M4nager",
     dbname="test_route_manager",
-    cursor_factory=DictCursor,
 )
 
 
