@@ -205,12 +205,18 @@ class BaseModel:
 
     @property
     def id(self) -> int:
+        """Returns DB ID (PK)."""
         return self.__id
 
     def set_id(self, id: int):
+        """Sets DB ID (PK)."""
         if type(id) is not int or id <= -1:
             raise ValueError("Model ID must be an integer >= 0!")
         self.__id = id
+
+    def is_active(self, db_obj: Database) -> bool:
+        """Checks if this object is active inside DB."""
+        raise NotImplementedError
 
     def exists_in_db(self, db_obj: Database) -> bool:
         """Checks if this object already exists inside DB."""
@@ -234,6 +240,10 @@ class BaseModel:
 
     def import_dict(self, data_dict: dict) -> None:
         """Imports DB data as dictionary."""
+        raise NotImplementedError
+
+    def _export_dict_for_query(self) -> dict:
+        """Exports DB model as dictionary for internal usage."""
         raise NotImplementedError
 
     def __str__(self) -> str:

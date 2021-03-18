@@ -33,6 +33,20 @@ class SalesPerson(BaseModel):
         self.name = name
         self.email = email  # UNIQUE
 
+    def is_active(self, db_obj: Database) -> bool:
+        if self.id <= -1:
+            if not self.exists_in_db(db_obj):
+                return False
+        select = db_obj.select_rows(
+            table=self.table_name,
+            fields=["id", "name", "email", "created", "modified", "active"],
+            filter=sql.SQL("WHERE {id} = {value}").format(
+                id=sql.Identifier("id"), value=sql.Literal(self.id),
+            ),
+        )
+        log.debug(f"SalesPerson.is_active(): select={select}")
+        return select[0]["active"]
+
     def exists_in_db(self, db_obj: Database) -> bool:
         if self.id >= 0:
             filter = sql.SQL("WHERE {id} = {value}").format(
@@ -75,8 +89,12 @@ class SalesPerson(BaseModel):
             ),
         )
 
-    def soft_delete_data_in_db(self, db_obj: Database):
-        raise NotImplementedError
+    def soft_delete_data_in_db(self, db_obj: Database) -> bool:
+        self.active = False
+        if self.update_data_in_db(db_obj):
+            log.info(f"Salesperson was (soft) deleted from DB: {self}")
+            return True
+        return False
 
     def _export_dict_for_query(self) -> dict:
         return dict(
