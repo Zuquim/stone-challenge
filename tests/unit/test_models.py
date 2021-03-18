@@ -116,7 +116,6 @@ def test_salesperson_crud(database_obj):
         ),
     )
     assert len(rows) == 0
-
     assert sp.update_data_in_db(database_obj) is True
     rows = database_obj.select_rows(
         table=sp.table_name,
@@ -128,5 +127,7 @@ def test_salesperson_crud(database_obj):
     assert len(rows) == 1
     assert sp.exists_in_db(database_obj) is True
 
-    with raises(expected_exception=NotImplementedError):
-        sp.soft_delete_data_in_db(database_obj)
+    # SOFT DELETE
+    assert sp.is_active(database_obj) is True
+    sp.soft_delete_data_in_db(database_obj)
+    assert sp.is_active(database_obj) is False

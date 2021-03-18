@@ -214,6 +214,10 @@ class BaseModel:
             raise ValueError("Model ID must be an integer >= 0!")
         self.__id = id
 
+    def is_active(self, db_obj: Database) -> bool:
+        """Checks if this object is active inside DB."""
+        raise NotImplementedError
+
     def exists_in_db(self, db_obj: Database) -> bool:
         """Checks if this object already exists inside DB."""
         raise NotImplementedError
