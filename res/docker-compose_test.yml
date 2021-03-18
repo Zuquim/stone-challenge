@@ -20,7 +20,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: py.test
+    command: sh res/wait-for-postgres.sh py.test
     depends_on:
       - db
     env_file:
@@ -34,6 +34,7 @@ services:
       - ./route_manager:/opt/challenge/route_manager:ro
       - ./tests:/opt/challenge/tests:ro
       - ./logs:/opt/challenge/logs
+      - ./res:/opt/challenge/res
     working_dir: /opt/challenge
 
 volumes:
