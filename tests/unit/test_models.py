@@ -72,7 +72,7 @@ def test_client_crud(database_obj):
 
     cli = Client(name=name)
     assert cli.table_name == table
-    assert cli.name == table
+    assert cli.name == name
 
 
 def test_route_crud(database_obj):
@@ -81,7 +81,7 @@ def test_route_crud(database_obj):
 
     rt = Route(name=name)
     assert rt.table_name == table
-    assert rt.name == table
+    assert rt.name == name
 
 
 def test_salesperson_crud(database_obj):
