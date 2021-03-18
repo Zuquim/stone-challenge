@@ -179,9 +179,20 @@ class Database:
         )
         return self.run_query_n_commit((query, field_value_dict))
 
-    def update_rows(self, query) -> str:
+    def update_rows_by_dict(
+        self, table: str, field_value_dict: dict, filter: Union[str, sql.Composed]
+    ) -> bool:
         """Run a SQL query to update rows in table."""
-        raise NotImplementedError
+        query_prefix = sql.SQL("UPDATE {table} SET ").format(
+            table=sql.Identifier(table)
+        )
+        query = fill_template_w_keys_n_values(
+            query_prefix,
+            field_value_dict,
+            build_key_value_template(len(field_value_dict.keys())),
+        )
+        query += sql.SQL(filter) if type(filter) is str else filter
+        return self.run_query_n_commit((query, None))
 
 
 class BaseModel:

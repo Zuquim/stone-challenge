@@ -2,6 +2,7 @@ from datetime import datetime
 
 from pytest import raises
 
+from route_manager.db import sql
 from route_manager.db.models import Client, Route, SalesPerson
 
 
@@ -88,6 +89,28 @@ def test_salesperson_crud(database_obj):
     assert sp.exists_in_db(database_obj) is True
     assert sp.id >= 0
 
+    sp.name = "Dwight K. Schrute"
+    sp.email = "schrute.dwight@dundermifflin.com"
+    assert sp.exists_in_db(database_obj) is True
+    rows = database_obj.select_rows(
+        table=sp.table_name,
+        fields=("id", "name", "email"),
+        filter=sql.SQL("WHERE {field} = {email}").format(
+            field=sql.Identifier("email"), email=sql.Literal(sp.email)
+        ),
+    )
+    assert len(rows) == 0
+
+    assert sp.update_data_in_db(database_obj) is True
+    rows = database_obj.select_rows(
+        table=sp.table_name,
+        fields=("id", "name", "email"),
+        filter=sql.SQL("WHERE {field} = {email}").format(
+            field=sql.Identifier("email"), email=sql.Literal(sp.email)
+        ),
+    )
+    assert len(rows) == 1
+    assert sp.exists_in_db(database_obj) is True
+
     with raises(expected_exception=NotImplementedError):
-        sp.update_data_in_db(database_obj)
         sp.soft_delete_data_in_db(database_obj)

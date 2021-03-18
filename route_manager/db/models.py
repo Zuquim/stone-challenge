@@ -1,4 +1,12 @@
-from route_manager.db import BaseModel, Database, _connection, log, sql
+from route_manager.db import (
+    BaseModel,
+    Database,
+    build_key_value_template,
+    datetime,
+    fill_template_w_keys_n_values,
+    log,
+    sql,
+)
 
 
 class Client(BaseModel):
@@ -51,11 +59,30 @@ class SalesPerson(BaseModel):
             values=(self.name, self.email, self.created),
         )
 
-    def update_data_in_db(self, db_obj: Database):
-        raise NotImplementedError
+    def update_data_in_db(self, db_obj: Database) -> bool:
+        if self.exists_in_db(db_obj) is False:
+            log.error(f"Salesperson was not found in DB: {self}")
+            return False
+        self.modified = datetime.now()
+        update_data = self._export_dict_for_query()
+        return db_obj.update_rows_by_dict(
+            table=self.table_name,
+            field_value_dict=update_data,
+            filter=sql.SQL("\nWHERE {id} = {self_id}").format(
+                id=sql.Identifier("id"), self_id=sql.Literal(self.id)
+            ),
+        )
 
     def soft_delete_data_in_db(self, db_obj: Database):
         raise NotImplementedError
+
+    def _export_dict_for_query(self) -> dict:
+        return dict(
+            name=self.name,
+            email=self.email,
+            modified=self.modified,
+            active=self.active,
+        )
 
     def export_dict(self) -> dict:
         return dict(
