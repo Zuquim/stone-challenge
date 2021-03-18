@@ -1,11 +1,13 @@
-from datetime import datetime
-
-from psycopg2.extensions import STATUS_READY, STATUS_BEGIN
+from psycopg2.extensions import STATUS_READY
 from pytest import raises
 
 from route_manager.db import (
-    BaseModel, Database,
-    _connection, build_key_value_template, fill_template_w_keys_n_values, sql
+    BaseModel,
+    Database,
+    _connection,
+    build_key_value_template,
+    fill_template_w_keys_n_values,
+    sql,
 )
 from tests.conftest import _default_conn_params
 
@@ -39,7 +41,6 @@ def test_db_init():
     assert db.port == 5432
     assert db.user == "manager"
     assert db.password == "R0ute-M4nager"
-    # assert db.dbname == "route_manager"
     assert db.conn is None
 
 

@@ -1,5 +1,4 @@
 import pytest
-# from pytest_postgresql.janitor import DatabaseJanitor
 
 from route_manager.db import Database, _connection
 
@@ -12,10 +11,10 @@ _default_conn_params = dict(
 )
 
 
-
 @pytest.fixture(scope="function")
 def database_obj():
     """Using dummy database for testing purposes."""
+
     def drop_table(conn: _connection):
         """Making sure the DB is clean for testing."""
         cur = conn.cursor()
@@ -37,4 +36,3 @@ def database_obj():
 
     # Cleaning DB
     drop_table(db.conn)
-

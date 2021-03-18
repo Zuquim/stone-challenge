@@ -64,7 +64,7 @@ class SalesPerson(BaseModel):
                 created=self.created,
                 modified=self.modified,
                 active=self.active,
-            )
+            ),
         )
 
     def __repr__(self) -> str:

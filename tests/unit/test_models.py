@@ -82,7 +82,6 @@ def test_salesperson_crud(database_obj):
     assert sp.created is None
     assert sp.exists_in_db(database_obj) is False
 
-    # assert sp.insert_into_db(database_obj) is True
     sp.insert_into_db(database_obj)
     assert sp.created <= datetime.now()
     assert sp.exists_in_db(database_obj) is True

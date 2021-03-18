@@ -232,13 +232,11 @@ def build_key_value_template(number_of_pairs: int) -> str:
 
 
 def fill_template_w_keys_n_values(
-        query_prefix: sql.Composed, keys_values: dict, template: str
+    query_prefix: sql.Composed, keys_values: dict, template: str
 ) -> sql.Composed:
     query = query_prefix
     for line, key, value in zip(
-            template.splitlines(), keys_values.keys(), keys_values.values()
+        template.splitlines(), keys_values.keys(), keys_values.values()
     ):
-        query += sql.SQL(line).format(
-            key=sql.Identifier(key), value=sql.Literal(value)
-        )
+        query += sql.SQL(line).format(key=sql.Identifier(key), value=sql.Literal(value))
     return query
