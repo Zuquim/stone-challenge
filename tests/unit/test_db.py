@@ -3,15 +3,12 @@ from datetime import datetime
 from psycopg2.extensions import STATUS_READY, STATUS_BEGIN
 from pytest import raises
 
-from route_manager.db import BaseModel
+from route_manager.db import (
+    BaseModel, Database,
+    _connection, build_key_value_template, fill_template_w_keys_n_values, sql
+)
+from tests.conftest import _default_conn_params
 
-
-def test_manual_db_setup(setup_database):
-    assert setup_database.status == STATUS_BEGIN
-
-    cursor = setup_database.cursor()
-    cursor.execute("SELECT * FROM test_users")
-    assert cursor.rowcount == 2
 
 def test_build_key_value_template():
     keys_values = dict(key1="value_A", key2="value_B", keyX="value_Y")
@@ -20,8 +17,6 @@ def test_build_key_value_template():
     assert "{key} = {value}" in template
     assert len(template.splitlines()) == 3
 
-def test_db_connection(database_connection):
-    assert database_connection.status == STATUS_READY
 
 def test_fill_template_w_keys_n_values():
     keys_values = dict(key1="value_A", key2="value_B", keyX="value_Y")
@@ -30,13 +25,21 @@ def test_fill_template_w_keys_n_values():
     query = fill_template_w_keys_n_values(query_, keys_values, template)
     assert type(query) is sql.Composed
 
-def test_db_init(database_obj):
-    db = database_obj
+
+def test_db_connection():
+    db = Database(**_default_conn_params)
+    db.connect()
+    assert type(db.conn) is _connection
+    assert db.conn.status == STATUS_READY
+
+
+def test_db_init():
+    db = Database(**_default_conn_params)
     assert db.host == "db"
     assert db.port == 5432
     assert db.user == "manager"
     assert db.password == "R0ute-M4nager"
-    assert db.dbname == "route_manager"
+    # assert db.dbname == "route_manager"
     assert db.conn is None
 
 
