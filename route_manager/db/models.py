@@ -89,8 +89,12 @@ class SalesPerson(BaseModel):
             ),
         )
 
-    def soft_delete_data_in_db(self, db_obj: Database):
-        raise NotImplementedError
+    def soft_delete_data_in_db(self, db_obj: Database) -> bool:
+        self.active = False
+        if self.update_data_in_db(db_obj):
+            log.info(f"Salesperson was (soft) deleted from DB: {self}")
+            return True
+        return False
 
     def _export_dict_for_query(self) -> dict:
         return dict(
