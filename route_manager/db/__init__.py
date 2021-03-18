@@ -101,7 +101,9 @@ class Database:
             with open("route_manager/sql/create_tables.sql") as q:
                 cursor.execute(q.read())
             self.conn.commit()
-            log.debug(f"Database.create_tables(): cursor.statusmessage='{cursor.statusmessage}'")
+            log.debug(
+                f"Database.create_tables(): cursor.statusmessage='{cursor.statusmessage}'"
+            )
 
     def select_rows(
         self,
@@ -132,8 +134,7 @@ class Database:
             self.disconnect()
 
     def run_query_n_commit(
-        self,
-        query_tuple: Tuple[sql.Composed, Union[dict, tuple]],
+        self, query_tuple: Tuple[sql.Composed, Union[None, dict, tuple]],
     ) -> bool:
         """Run query (write into DB) and commit."""
         try:
@@ -151,10 +152,7 @@ class Database:
             self.disconnect()
 
     def insert_into(
-        self,
-        table: str,
-        fields: Union[list, tuple],
-        values: Union[list, tuple],
+        self, table: str, fields: Union[list, tuple], values: Union[list, tuple],
     ) -> bool:
         """Run a SQL query to insert data into a table."""
         if len(fields) != len(values):

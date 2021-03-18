@@ -43,7 +43,9 @@ class SalesPerson(BaseModel):
                 email=sql.Identifier("email"), value=sql.Literal(self.email),
             )
         select = db_obj.select_rows(
-            table=self.table_name, fields=["id", "name", "email", "created", "modified", "active"], filter=filter
+            table=self.table_name,
+            fields=["id", "name", "email", "created", "modified", "active"],
+            filter=filter,
         )
         log.debug(f"SalesPerson.exists_in_db(): select={select}")
         if len(select) == 1:
