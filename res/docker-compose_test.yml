@@ -1,0 +1,40 @@
+version: "3.7"
+services:
+
+  db:
+    command: postgres -c logging_collector=on -c log_directory=/var/log/postgresql -c log_filename=postgresql.log -c log_statement=mod
+    container_name: test-db
+    image: postgis/postgis:latest
+    env_file:
+      - .env
+    logging:
+      driver: local
+    ports:
+      - 55000:5432
+    restart: unless-stopped
+    volumes:
+      - postgis-data:/var/lib/postgresql/data
+      - ./logs:/var/log/postgresql
+
+  route-manager:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: py.test
+    depends_on:
+      - db
+    env_file:
+      - .env
+    links:
+      - test-db:db
+    ports:
+      - 8000:80
+    restart: "no"
+    volumes:
+      - ./route_manager:/opt/challenge/route_manager:ro
+      - ./tests:/opt/challenge/tests:ro
+      - ./logs:/opt/challenge/logs
+    working_dir: /opt/challenge
+
+volumes:
+  postgis-test-data:
